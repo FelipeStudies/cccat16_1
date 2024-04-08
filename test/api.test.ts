@@ -1,6 +1,6 @@
 import axios from "axios";
 
-describe("Deve criar uma conta para o passageiro", async function () {
+test("Deve criar uma conta para o passageiro", async function () {
   const input = {
     name: "John Doe",
     email: `jon.doe${Math.random()}@gmail.com`,
@@ -8,6 +8,7 @@ describe("Deve criar uma conta para o passageiro", async function () {
     isPassenger: true,
   };
 
-  const output = await axios.post("http://localhost:3000/signup", input);
-  console.log(output.status, output.data);
+  const { status } = await axios.post("http://localhost:3000/signup", input);
+
+  expect(status).toBe(200);
 })
