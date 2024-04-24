@@ -2,7 +2,7 @@ drop schema cccat16 cascade;
 
 create schema cccat16;
 
-create table cccat16.account {
+create table cccat16.account (
   account_id primary key,
   name text not null,
   email text not null,
@@ -10,4 +10,18 @@ create table cccat16.account {
   car_plate text null,
   is_passenger boolean not null default false,
   is_driver boolean not null default false,
-}
+);
+
+create table cccat16.ride (
+  ride_id uuid,
+  passenger_id uuid,
+  driver_id uuid,
+  status text,
+  fare numeric,
+  distance numeric,
+  from_lat numeric,
+  from_long numeric,
+  to_lat numeric,
+  to_long numeric,
+  date timestamp
+);
