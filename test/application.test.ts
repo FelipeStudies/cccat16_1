@@ -108,7 +108,7 @@ test("Não deve criar uma conta para o passageiro se o nome for inválido", asyn
   await expect(() => signup.execute(input)).rejects.toThrow(new Error('Invalid car plate'));
 })
 
-test.only("Deve criar uma conta para o passageiro com stub", async function () {
+test("Deve criar uma conta para o passageiro com stub", async function () {
   const input = {
     name: "John Doe",
     email: `jon.doe${Math.random()}@gmail.com`,
@@ -195,10 +195,12 @@ test("Deve criar uma conta para o passageiro com spy", async function () {
 
   expect(sendSpy.calledOnce).toBe(true)
   expect(sendSpy.calledWith(input.email, "Welcome!", "")).toBe(true)
+
+  sendSpy.restore();
 })
 
 // Mock mistura características de Stub e Spy, criando as expectativas no próprio objeto (mock)
-test.only("Deve criar uma conta para o passageiro com mock", async function () {
+test("Deve criar uma conta para o passageiro com mock", async function () {
   const input = {
     name: "John Doe",
     email: `jon.doe${Math.random()}@gmail.com`,
