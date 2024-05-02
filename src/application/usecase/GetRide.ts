@@ -30,11 +30,17 @@ export default class GetRide {
 
   async execute(input: Input): Promise<Output> {
     const ride = await this.rideRepository.getRideById(input.rideId);
-    const passenger = await this.accountRepository.getAccountById(ride.passengerId);
-    let driver;
+
+    const promises = [
+      this.accountRepository.getAccountById(ride.passengerId),
+    ]
+
     if(ride.driverId) {
-      driver = await this.accountRepository.getAccountById(ride.driverId);
+      promises.push(this.accountRepository.getAccountById(ride.driverId));
     }
+
+    const [passenger, driver] = await Promise.all(promises);
+
     return {
       rideId: ride.rideId,
       passengerId: ride.passengerId,
