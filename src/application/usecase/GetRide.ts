@@ -19,6 +19,8 @@ type Output = {
   status: string,
   passengerName: string,
   passengerEmail: string,
+  driverName?: string,
+  driverEmail?: string,
 }
 
 // Facade
@@ -29,16 +31,22 @@ export default class GetRide {
   async execute(input: Input): Promise<Output> {
     const ride = await this.rideRepository.getRideById(input.rideId);
     const passenger = await this.accountRepository.getAccountById(ride.passengerId);
+    let driver;
+    if(ride.driverId) {
+      driver = await this.accountRepository.getAccountById(ride.driverId);
+    }
     return {
       rideId: ride.rideId,
       passengerId: ride.passengerId,
-      fromLat: ride.fromLat,
-      fromLong: ride.fromLong,
-      toLat: ride.toLat,
-      toLong: ride.toLong,
-      status: ride.status,
-      passengerName: passenger.name,
-      passengerEmail: passenger.email,
+      fromLat: ride.getFromLat(),
+      fromLong: ride.getFromLong(),
+      toLat: ride.getToLat(),
+      toLong: ride.getToLong(),
+      status: ride.getStatus(),
+      passengerName: passenger.getName(),
+      passengerEmail: passenger.getEmail(),
+      driverName: driver?.getName(),
+      driverEmail: driver?.getEmail(),
     }
   }
 
