@@ -4,7 +4,6 @@ import crypto from "crypto";
 import Coord from "../value-objects/Coord";
 import Segment from "../value-objects/Segment";
 import RideStatus, { RideStatusFactory } from "../value-objects/RideStatus";
-import Position from "./Position";
 
 export default class Ride {
   status: RideStatus
@@ -59,17 +58,6 @@ export default class Ride {
     this.status.start();
   }
 
-  getDistance (positions: Position[]) {
-    let distance = 0;
-    for (const [index, position] of positions.entries()) {
-      if(index + 1 === positions.length) break;
-      const nextPosition = positions[index + 1];
-      const segment = new Segment(position.coord, nextPosition.coord);
-      distance += segment.getDistance();
-    }
-    return distance;
-  }
-
   getFromLat () {
     return this.segment.from.getLat();
   }
@@ -86,9 +74,9 @@ export default class Ride {
     return this.segment.to.getLong();
   }
 
-  // getDistance () {
-  //   return this.segment.getDistance();
-  // }
+  getDistance () {
+    return this.segment.getDistance();
+  }
 
   getStatus () {
     return this.status.value;
