@@ -1,6 +1,6 @@
 // Domain Service
 
-import Coord from "./Coord";
+import Coord from "../value-objects/Coord";
 
 export default class DistanceCalculator {
 
