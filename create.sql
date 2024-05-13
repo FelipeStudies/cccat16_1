@@ -31,5 +31,5 @@ create table cccat16.position (
   ride_id uuid,
   lat numeric,
   long numeric,
-  date timestamp,
-)
+  date timestamp
+);

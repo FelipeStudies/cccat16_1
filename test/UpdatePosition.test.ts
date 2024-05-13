@@ -8,11 +8,13 @@ import { PgPromiseAdapter } from "../src/infra/database/DatabaseConnection";
 import AcceptRide from "../src/application/usecase/AcceptRide";
 import StartRide from "../src/application/usecase/StartRide";
 import UpdatePosition from "../src/application/usecase/UpdatePosition";
+import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepository";
 
 test("Deve atualizar a posição da corrida", async function () {
   const connection = new PgPromiseAdapter();
   const accountRepository = new AccountRepositoryDatabase(connection);
   const rideRepository = new RideRepositoryDatabase();
+  const positionRepository = new PositionRepositoryDatabase();
   const mailerGateway = new MailerGatewayMemory();
   const signup = new Signup(accountRepository, mailerGateway);
   const inputSignup = {
@@ -54,7 +56,7 @@ test("Deve atualizar a posição da corrida", async function () {
   };
   await startRide.execute(inputStartRide);
 
-  const updatePosition = new UpdatePosition(rideRepository);
+  const updatePosition = new UpdatePosition(rideRepository, positionRepository);
   const inputUpdatePosition1 = {
     rideId: outputRequestRide.rideId,
     lat: -27.584905257808835,
