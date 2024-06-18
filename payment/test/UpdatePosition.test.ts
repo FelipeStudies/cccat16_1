@@ -4,17 +4,17 @@ import { Signup } from "../src/application/usecase/Signup";
 import { AccountRepositoryDatabase } from "../src/infra/repository/AccountRepository";
 import { MailerGatewayMemory } from "../src/infra/gateway/MailerGateway";
 import { RideRepositoryDatabase } from "../src/infra/repository/RideRepository";
-import { PgPromiseAdapter } from "../src/infra/database/DatabaseConnection";
+import { UnityOfWork } from "../src/infra/database/DatabaseConnection";
 import AcceptRide from "../src/application/usecase/AcceptRide";
 import StartRide from "../src/application/usecase/StartRide";
 import UpdatePosition from "../src/application/usecase/UpdatePosition";
 import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepository";
 
 test("Deve atualizar a posição da corrida", async function () {
-  const connection = new PgPromiseAdapter();
+  const connection = new UnityOfWork();
   const accountRepository = new AccountRepositoryDatabase(connection);
-  const rideRepository = new RideRepositoryDatabase();
-  const positionRepository = new PositionRepositoryDatabase();
+  const rideRepository = new RideRepositoryDatabase(connection);
+  const positionRepository = new PositionRepositoryDatabase(connection);
   const mailerGateway = new MailerGatewayMemory();
   const signup = new Signup(accountRepository, mailerGateway);
   const inputSignup = {
@@ -55,8 +55,10 @@ test("Deve atualizar a posição da corrida", async function () {
     rideId: outputRequestRide.rideId,
   };
   await startRide.execute(inputStartRide);
-
-  const updatePosition = new UpdatePosition(rideRepository, positionRepository);
+  const unitOfWork = new UnityOfWork();
+  const rideRepositoryUoW = new RideRepositoryDatabase(unitOfWork);
+  const positionRepositoryUoW = new PositionRepositoryDatabase(unitOfWork);
+  const updatePosition = new UpdatePosition(rideRepositoryUoW, positionRepositoryUoW);
   const inputUpdatePosition1 = {
     rideId: outputRequestRide.rideId,
     lat: -27.584905257808835,
@@ -70,11 +72,13 @@ test("Deve atualizar a posição da corrida", async function () {
   };
   await updatePosition.execute(inputUpdatePosition2);
 
-  const getRide = new GetRide(accountRepository, rideRepository);
+  const getRide = new GetRide(accountRepository, rideRepository, positionRepository);
   const inputGetRide = {
     rideId: outputRequestRide.rideId,
   };
   const outputGetRide = await getRide.execute(inputGetRide);
   expect(outputGetRide.rideId).toBe(outputRequestRide.rideId);
+  expect(outputGetRide.distance).toBe(10);
   await connection.close();
+  await unitOfWork.close();
 });
