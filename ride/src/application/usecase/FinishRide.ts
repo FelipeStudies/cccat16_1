@@ -1,6 +1,6 @@
 // use case
 
-import Registry from "../../infra/dependency-injection/Registry";
+import Registry, { inject } from "../../infra/dependency-injection/Registry";
 import RideRepository from "../../infra/repository/RideRepository";
 import PaymentGateway from "../gateway/PaymentGateway";
 
@@ -12,13 +12,12 @@ type Output = void
 
 export default class FinishRide {
 
-  readonly rideRepository: RideRepository;
-  readonly paymentGateway: PaymentGateway;
+  @inject("rideRepository")
+  readonly rideRepository!: RideRepository;
+  @inject("paymentGateway")
+  readonly paymentGateway!: PaymentGateway;
 
-  constructor() {
-    this.rideRepository = Registry.getInstance().inject("rideRepository");
-    this.paymentGateway = Registry.getInstance().inject("paymentGateway");
-  }
+  constructor() {}
 
   async execute(input: Input): Promise<Output> {
     const ride = await this.rideRepository.getRideById(input.rideId);
