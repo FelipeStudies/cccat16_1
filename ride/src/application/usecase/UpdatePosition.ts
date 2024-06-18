@@ -8,6 +8,7 @@ type Input = {
   rideId: string
   lat: number,
   long: number,
+  date: Date
 }
 
 type Output = void
@@ -18,9 +19,9 @@ export default class UpdatePosition {
 
   async execute(input: Input): Promise<Output> {
     const ride = await this.rideRepository.getRideById(input.rideId);
-    ride.updatePosition(input.lat, input.long);
+    ride.updatePosition(input.lat, input.long, input.date);
     await this.rideRepository.updateRide(ride);
-    const position = Position.create(input.rideId, input.lat, input.long);
+    const position = Position.create(input.rideId, input.lat, input.long, input.date);
     await this.positionRepository.savePosition(position);
     await this.rideRepository.connection.commit();
   }

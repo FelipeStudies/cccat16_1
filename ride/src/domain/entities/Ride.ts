@@ -4,6 +4,7 @@ import crypto from "crypto";
 import Coord from "../value-objects/Coord";
 import Segment from "../value-objects/Segment";
 import RideStatus, { RideStatusFactory } from "../value-objects/RideStatus";
+import { FareCalculatorFactory } from "../services/FareCalculator";
 
 export default class Ride {
   status: RideStatus
@@ -70,14 +71,14 @@ export default class Ride {
 
   finish() {
     this.status.finish();
-    this.fare = this.distance * 2.1;
   }
 
-  updatePosition(lat: number, long: number) {
+  updatePosition(lat: number, long: number, date: Date) {
     const newPosition = new Coord(lat, long);
     const segment = new Segment(this.lastPosition, newPosition);
 
     this.distance += segment.getDistance();
+    this.fare += FareCalculatorFactory.create(date).calculate(this.distance);
     this.lastPosition = newPosition;
   }
 

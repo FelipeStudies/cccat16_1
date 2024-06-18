@@ -11,6 +11,7 @@ import UpdatePosition from "../src/application/usecase/UpdatePosition";
 import { PositionRepositoryDatabase } from "../src/infra/repository/PositionRepository";
 import FinishRide from "../src/application/usecase/FinishRide";
 import PaymentGatewayHttp from "../src/infra/gateway/PaymentGatewayHttp";
+import Registry from "../src/infra/dependency-injection/Registry";
 
 test("Deve finalizar uma corrida", async function () {
   const connection = new UnityOfWork();
@@ -65,16 +66,27 @@ test("Deve finalizar uma corrida", async function () {
     rideId: outputRequestRide.rideId,
     lat: -27.584905257808835,
     long: -48.545022195325124,
+    date: new Date("2023-03-01T21:30:00"),
   };
   await updatePosition.execute(inputUpdatePosition1);
   const inputUpdatePosition2 = {
     rideId: outputRequestRide.rideId,
     lat: -27.496887588317275,
     long: -48.522234807851476,
+    date: new Date("2023-03-01T22:30:00"),
   };
   await updatePosition.execute(inputUpdatePosition2);
+  const inputUpdatePosition3 = {
+    rideId: outputRequestRide.rideId,
+    lat: -27.584905257808835,
+    long: -48.545022195325124,
+    date: new Date("2023-03-01T23:30:00"),
+  };
+  await updatePosition.execute(inputUpdatePosition3);
   const paymentGateway = new PaymentGatewayHttp();
-  const finishRide = new FinishRide(rideRepository, paymentGateway);
+  Registry.getInstance().provide("rideRepository", rideRepository);
+  Registry.getInstance().provide("paymentGateway", paymentGateway);
+  const finishRide = new FinishRide();
   const inputFinishRide = {
     rideId: outputRequestRide.rideId,
   };
